@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desa Muara Dua - Harmoni di Tepi Sungai</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Website profil resmi Desa Muara Dua, Kecamatan Siak Kecil, Kabupaten Bengkalis. Temukan informasi lengkap mengenai sejarah, pemerintahan, potensi, dan kegiatan warga.">
+    <meta name="keywords" content="Desa Muara Dua, Siak Kecil, Bengkalis, Profil Desa, Sistem Informasi Desa, KKN UIN Suska 2025">
+
+    <!-- Favicon -->
+    <link rel="icon" href="asset/img/logo kabupaten bengkalis.png" type="image/png">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Poppins & Lato -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Leaflet.js for Interactive Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <style>
+        /* Custom styles */
+        :root {
+            --font-size-base: 16px;
+        }
+        html {
+            font-size: var(--font-size-base);
+        }
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #f0f9ff; /* sky-50 */
+            overflow-x: hidden; /* Prevent horizontal scroll */
+            transition: background-color 0.3s, color 0.3s;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Poppins', sans-serif;
+        }
+        .hero-bg {
+            background-image: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0.2)), url('https://picsum.photos/seed/rivervillage/1920/1080');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed; /* Parallax effect */
+        }
+        .text-shadow-md { 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5); 
+        }
+
+        /* Animation Styles */
+        .revealable {
+            opacity: 0;
+            transform: translateY(50px) scale(0.98);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .revealable.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+        
+        /* Leaflet Map Style */
+        #map { 
+            height: 500px; 
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            z-index: 10;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-content {
+            transition: transform 0.3s ease;
+        }
+        body.modal-open {
+            overflow: hidden;
+        }
+
+        /* High Contrast Mode */
+        body.high-contrast {
+            background-color: #111827; /* gray-900 */
+            color: #f9fafb; /* gray-50 */
+        }
+        body.high-contrast .bg-white {
+            background-color: #1f2937; /* gray-800 */
+            border: 1px solid #4b5563; /* gray-600 */
+        }
+        body.high-contrast .text-slate-800, body.high-contrast .text-slate-700 {
+            color: #f9fafb; /* gray-50 */
+        }
+        body.high-contrast .text-slate-600, body.high-contrast .text-slate-500 {
+            color: #d1d5db; /* gray-300 */
+        }
+        body.high-contrast #navbar {
+            background-color: rgba(31, 41, 55, 0.8); /* gray-800 with opacity */
+        }
+        body.high-contrast .bg-sky-100 {
+            background-color: #374151; /* gray-700 */
+        }
+
+        /* Active Nav Link Style */
+        .nav-link.active {
+            color: #0284c7; /* text-sky-600 */
+            font-weight: 700; /* font-bold */
+        }
+        
+        /* Accordion Styles */
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0, 1, 0, 1);
+        }
+        .accordion-item.active .accordion-content {
+            max-height: 2000px; /* Set a large enough value */
+            transition: max-height 1s ease-in-out;
+        }
+        .accordion-item .accordion-icon {
+            transition: transform 0.3s ease;
+        }
+        .accordion-item.active .accordion-icon {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body class="bg-sky-50 text-slate-700">
+
+    <!-- Header / Navbar -->
+    <header id="navbar" class="bg-white/80 backdrop-blur-lg fixed top-0 left-0 right-0 z-40 shadow-md transition-all duration-300">
+        <div class="container mx-auto px-6 py-3">
+            <div class="flex items-center justify-between">
+                <a href="#" class="flex items-center gap-3">
+                    <img src="asset/img/logo kabupaten bengkalis.png" alt="Logo Bengkalis" class="h-8 w-auto">
+                    <span class="text-2xl font-bold text-sky-600">Muara Dua</span>
+                </a>
+                <nav class="hidden md:flex items-center space-x-6">
+                    <a href="#hero" class="nav-link text-slate-600 hover:text-sky-600 font-medium">Beranda</a>
+                    <a href="#tentang" class="nav-link text-slate-600 hover:text-sky-600 font-medium">Tentang</a>
+                    <a href="#potensi" class="nav-link text-slate-600 hover:text-sky-600 font-medium">Potensi</a>
+                    <a href="#pemerintahan" class="nav-link text-slate-600 hover:text-sky-600 font-medium">Pemerintahan</a>
+                    <a href="#galeri" class="nav-link text-slate-600 hover:text-sky-600 font-medium">Galeri</a>
+                    <a href="#kontak" class="bg-sky-500 text-white px-4 py-2 rounded-full hover:bg-sky-600 transition-colors">Kontak</a>
+                </nav>
+                <button id="mobile-menu-button" class="md:hidden">
+                    <i data-lucide="menu" class="text-slate-700"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4">
+             <a href="#hero" class="nav-link block py-2 text-slate-600 hover:text-sky-600">Beranda</a>
+             <a href="#tentang" class="nav-link block py-2 text-slate-600 hover:text-sky-600">Tentang</a>
+             <a href="#potensi" class="nav-link block py-2 text-slate-600 hover:text-sky-600">Potensi</a>
+             <a href="#pemerintahan" class="nav-link block py-2 text-slate-600 hover:text-sky-600">Pemerintahan</a>
+             <a href="#galeri" class="nav-link block py-2 text-slate-600 hover:text-sky-600">Galeri</a>
+             <a href="#kontak" class="block mt-2 bg-sky-500 text-white px-4 py-2 rounded-full hover:bg-sky-600 transition-colors text-center">Kontak</a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero-bg h-screen flex items-center justify-center text-white">
+        <div class="text-center px-6">
+            <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold text-shadow-md leading-tight mb-4">Desa Muara Dua</h1>
+            <p class="text-lg md:text-xl max-w-3xl mx-auto text-slate-200">
+                 Tempat Bertemunya Arus Kehidupan. 
+            </p>
+            <a href="#tentang" class="mt-8 inline-block bg-white text-sky-600 font-bold px-8 py-3 rounded-full text-lg hover:bg-slate-200 transition-colors transform hover:scale-105">
+                Jelajahi Desa
+            </a>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-16 md:py-24 space-y-24">
+
+        <!-- Tentang Kami Section -->
+        <section id="tentang" class="flex flex-col md:flex-row items-center gap-12 md:gap-16">
+            <div class="md:w-1/2 revealable">
+                <img loading="lazy" src="https://picsum.photos/seed/villagepeople/600/400" alt="Warga Desa Muara Dua" class="rounded-2xl shadow-2xl w-full object-cover h-full">
+            </div>
+            <div class="md:w-1/2 revealable" style="transition-delay: 150ms;">
+                <span class="text-sky-500 font-semibold">Sejarah & Kondisi Desa</span>
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mt-2 mb-4">Perpaduan Budaya di Lahan Gambut</h2>
+                <p class="mb-4">
+                    Desa Muara Dua adalah desa ekstransmigrasi yang berdiri sejak 1982, menjadi rumah bagi perpaduan harmonis antara masyarakat transmigran dari Jawa dengan penduduk asli Melayu. Kondisi geografis desa didominasi oleh dataran rendah berlahan gambut dengan suhu berkisar 28-36°C, kondisi yang ideal untuk komoditas utama kami.
+                </p>
+                <p>
+                    Perekonomian warga bertumpu pada perkebunan Kelapa Sawit yang telah menjadi primadona sejak tahun 1990-an, didukung oleh tanamanKaret dan palawija. Meskipun akses jalan masih menjadi tantangan, semangat gotong royong dan resiliensi warga terus mendorong desa ini untuk berkembang maju.
+                </p>
+            </div>
+        </section>
+
+        <!-- Data & Potensi Desa Section -->
+        <section id="potensi" class="revealable">
+            <div class="text-center mb-12">
+                <span class="text-sky-500 font-semibold">Monografi & Statistik</span>
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mt-2">Data & Potensi Desa</h2>
+            </div>
+            <div class="bg-white p-8 rounded-2xl shadow-lg">
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 text-center">
+                    <div class="flex flex-col items-center">
+                        <div class="bg-sky-100 text-sky-600 w-20 h-20 rounded-full flex items-center justify-center">
+                            <i data-lucide="map" class="w-10 h-10"></i>
+                        </div>
+                        <p class="font-bold text-2xl mt-4 text-slate-800">8.061 Ha</p>
+                        <p class="text-slate-500">Luas Wilayah</p>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="bg-sky-100 text-sky-600 w-20 h-20 rounded-full flex items-center justify-center">
+                            <i data-lucide="users" class="w-10 h-10"></i>
+                        </div>
+                        <p class="font-bold text-2xl mt-4 text-slate-800">1.779 Jiwa</p>
+                        <p class="text-slate-500">Jumlah Penduduk</p>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="bg-sky-100 text-sky-600 w-20 h-20 rounded-full flex items-center justify-center">
+                            <i data-lucide="home" class="w-10 h-10"></i>
+                        </div>
+                        <p class="font-bold text-2xl mt-4 text-slate-800">544 KK</p>
+                        <p class="text-slate-500">Kepala Keluarga</p>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="bg-sky-100 text-sky-600 w-20 h-20 rounded-full flex items-center justify-center">
+                            <i data-lucide="sprout" class="w-10 h-10"></i>
+                        </div>
+                        <p class="font-bold text-2xl mt-4 text-slate-800">5.180 Ha</p>
+                        <p class="text-slate-500">Perkebunan Sawit</p>
+                    </div>
+                    <div class="flex flex-col items-center col-span-2 md:col-span-1 lg:col-span-1">
+                        <div class="bg-sky-100 text-sky-600 w-20 h-20 rounded-full flex items-center justify-center">
+                            <i data-lucide="briefcase" class="w-10 h-10"></i>
+                        </div>
+                        <p class="font-bold text-2xl mt-4 text-slate-800">368 Orang</p>
+                        <p class="text-slate-500">Petani/Pekebun</p>
+                    </div>
+                </div>
+                <div class="border-t my-8"></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-bold text-center mb-4 text-slate-800">Demografi Usia</h3>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex items-center"><div class="w-24 shrink-0">Usia 0-18 th</div><div class="w-full bg-gray-200 rounded-full h-4"><div class="bg-sky-500 h-4 rounded-full" style="width: 35.6%;"></div></div><div class="w-16 text-right shrink-0">35.6%</div></div>
+                            <div class="flex items-center"><div class="w-24 shrink-0">Usia 19-59 th</div><div class="w-full bg-gray-200 rounded-full h-4"><div class="bg-sky-500 h-4 rounded-full" style="width: 55.7%;"></div></div><div class="w-16 text-right shrink-0">55.7%</div></div>
+                            <div class="flex items-center"><div class="w-24 shrink-0">Usia > 59 th</div><div class="w-full bg-gray-200 rounded-full h-4"><div class="bg-sky-500 h-4 rounded-full" style="width: 8.7%;"></div></div><div class="w-16 text-right shrink-0">8.7%</div></div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-center mb-4 text-slate-800">Mata Pencaharian</h3>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex items-center"><div class="w-28 shrink-0">Petani/Pekebun</div><div class="w-full bg-gray-200 rounded-full h-4"><div class="bg-teal-500 h-4 rounded-full" style="width: 65%;"></div></div><div class="w-16 text-right shrink-0">65%</div></div>
+                            <div class="flex items-center"><div class="w-28 shrink-0">Wiraswasta</div><div class="w-full bg-gray-200 rounded-full h-4"><div class="bg-teal-500 h-4 rounded-full" style="width: 27%;"></div></div><div class="w-16 text-right shrink-0">27%</div></div>
+                            <div class="flex items-center"><div class="w-28 shrink-0">Lainnya</div><div class="w-full bg-gray-200 rounded-full h-4"><div class="bg-teal-500 h-4 rounded-full" style="width: 8%;"></div></div><div class="w-16 text-right shrink-0">8%</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Produk Unggulan Desa Section -->
+        <section id="produk-unggulan" class="revealable">
+            <div class="text-center mb-12">
+                <span class="text-sky-500 font-semibold">Karya Warga</span>
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mt-2">Produk Unggulan Desa (UMKM)</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8" data-stagger-children>
+                <!-- Produk Card 1 -->
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden group revealable">
+                    <div class="relative h-64">
+                        <img loading="lazy" src="https://picsum.photos/seed/palmoil/800/600" alt="Olahan Kelapa Sawit" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">Olahan Kelapa Sawit</h3>
+                        <p class="text-slate-600 text-sm mb-4">Sebagai komoditas utama, warga mengolah sawit menjadi produk bernilai tambah seperti minyak makan merah dan kerajinan lidi.</p>
+                        <p class="text-sm font-semibold text-sky-700">Oleh: BUMDes Muara Dua Jaya</p>
+                    </div>
+                </div>
+                <!-- Produk Card 2 -->
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden group revealable">
+                    <div class="relative h-64">
+                        <img loading="lazy" src="https://picsum.photos/seed/craft/800/600" alt="Kerajinan Anyaman & Kayu" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">Kerajinan Anyaman & Kayu</h3>
+                        <p class="text-slate-600 text-sm mb-4">Keterampilan tangan warga menghasilkan berbagai produk kerajinan anyaman dan olahan kayu yang unik dan berkualitas.</p>
+                        <p class="text-sm font-semibold text-sky-700">Oleh: Sanggar Kerajinan Desa</p>
+                    </div>
+                </div>
+                <!-- Produk Card 3 -->
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden group revealable">
+                    <div class="relative h-64">
+                        <img loading="lazy" src="https://picsum.photos/seed/fish/800/600" alt="Hasil Tambak Ikan" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">Hasil Tambak Ikan</h3>
+                        <p class="text-slate-600 text-sm mb-4">Memanfaatkan lahan gambut, warga membudidayakan ikan air tawar seperti lele dan patin yang dijual segar maupun olahan.</p>
+                        <p class="text-sm font-semibold text-sky-700">Oleh: Kelompok Perikanan "Mina Jaya"</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pemerintahan Desa Section -->
+        <section id="pemerintahan" class="revealable">
+             <div class="text-center mb-12">
+                <span class="text-sky-500 font-semibold">Struktur Organisasi</span>
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mt-2">Aparatur Pemerintah Desa</h2>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 max-w-7xl mx-auto" data-stagger-children>
+                <!-- Aparatur Card -->
+                <div class="text-center bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 revealable">
+                    <img loading="lazy" src="https://avatar.iran.liara.run/public/boy?username=slamet" alt="Kepala Desa" class="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-sky-200">
+                    <h3 class="text-xl font-bold text-slate-800">Slamet Riyono, S.H.</h3>
+                    <p class="text-sky-600 font-semibold">Kepala Desa</p>
+                    <p class="text-sm text-slate-500 mt-2">Jl. Poros Desa No. 1</p>
+                </div>
+                <!-- Aparatur Card -->
+                <div class="text-center bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 revealable">
+                    <img loading="lazy" src="https://avatar.iran.liara.run/public/boy?username=rosyid" alt="Sekretaris Desa" class="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-sky-200">
+                    <h3 class="text-xl font-bold text-slate-800">Abdul Rosyid</h3>
+                    <p class="text-sky-600 font-semibold">Sekretaris Desa</p>
+                    <p class="text-sm text-slate-500 mt-2">Jl. Kantor Desa No. 10</p>
+                </div>
+                <!-- Aparatur Card -->
+                <div class="text-center bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 revealable">
+                    <img loading="lazy" src="https://avatar.iran.liara.run/public/girl?username=supriyani" alt="Kaur Umum" class="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-sky-200">
+                    <h3 class="text-xl font-bold text-slate-800">Supriyani</h3>
+                    <p class="text-sky-600 font-semibold">Kaur Umum</p>
+                    <p class="text-sm text-slate-500 mt-2">Jl. Makmur No. 5</p>
+                </div>
+                 <!-- Aparatur Card -->
+                <div class="text-center bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 revealable">
+                    <img loading="lazy" src="https://avatar.iran.liara.run/public/boy?username=afik" alt="Ketua BPD" class="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-sky-200">
+                    <h3 class="text-xl font-bold text-slate-800">Afik Wismohono</h3>
+                    <p class="text-sky-600 font-semibold">Ketua BPD</p>
+                    <p class="text-sm text-slate-500 mt-2">Jl. Sejahtera No. 8</p>
+                </div>
+                <!-- Kadus Card -->
+                <div class="text-center bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 revealable">
+                    <img loading="lazy" src="https://avatar.iran.liara.run/public/boy?username=alin" alt="Kepala Dusun Mangku Jaya" class="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-sky-200">
+                    <h3 class="text-xl font-bold text-slate-800">Alin</h3>
+                    <p class="text-sky-600 font-semibold">Kadus Mangku Jaya</p>
+                    <p class="text-sm text-slate-500 mt-2">Jl. Mangku Jaya No. 12</p>
+                </div>
+                <!-- Kadus Card -->
+                <div class="text-center bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 revealable">
+                    <img loading="lazy" src="https://avatar.iran.liara.run/public/boy?username=saharudin" alt="Kepala Dusun Mertas Indah" class="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-sky-200">
+                    <h3 class="text-xl font-bold text-slate-800">Saharudin</h3>
+                    <p class="text-sky-600 font-semibold">Kadus Mertas Indah</p>
+                    <p class="text-sm text-slate-500 mt-2">Jl. Mertas Indah No. 23</p>
+                </div>
+                <!-- Kadus Card -->
+                <div class="text-center bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 revealable">
+                    <img loading="lazy" src="https://avatar.iran.liara.run/public/boy?username=ari" alt="Kepala Dusun Jadi Mulyo" class="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-sky-200">
+                    <h3 class="text-xl font-bold text-slate-800">Ari Kurniawan</h3>
+                    <p class="text-sky-600 font-semibold">Kadus Jadi Mulyo</p>
+                    <p class="text-sm text-slate-500 mt-2">Jl. Jadi Mulyo No. 34</p>
+                </div>
+                <!-- Kadus Card -->
+                <div class="text-center bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 revealable">
+                    <img loading="lazy" src="https://avatar.iran.liara.run/public/boy?username=irwansyah" alt="Kepala Dusun Jaya Abadi" class="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-sky-200">
+                    <h3 class="text-xl font-bold text-slate-800">Irwansyah</h3>
+                    <p class="text-sky-600 font-semibold">Kadus Jaya Abadi</p>
+                    <p class="text-sm text-slate-500 mt-2">Jl. Jaya Abadi No. 45</p>
+                </div>
+            </div>
+            
+            <div class="mt-12 space-y-4 max-w-5xl mx-auto">
+                <!-- RW Accordion -->
+                <div id="aparatur-rw" class="accordion-item bg-white rounded-2xl shadow-lg">
+                    <button class="accordion-toggle w-full flex justify-between items-center p-6 text-left">
+                        <h3 class="text-2xl font-bold text-slate-800">Ketua Rukun Warga (RW)</h3>
+                        <i data-lucide="chevron-down" class="accordion-icon text-sky-500"></i>
+                    </button>
+                    <div class="accordion-content px-6">
+                        <div class="pb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8" data-stagger-children>
+                            <!-- RW Cards will be generated here by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                <!-- RT Accordion -->
+                <div id="aparatur-wilayah" class="accordion-item bg-white rounded-2xl shadow-lg">
+                    <button class="accordion-toggle w-full flex justify-between items-center p-6 text-left">
+                        <h3 class="text-2xl font-bold text-slate-800">Ketua Rukun Tetangga (RT)</h3>
+                        <i data-lucide="chevron-down" class="accordion-icon text-sky-500"></i>
+                    </button>
+                    <div class="accordion-content px-6">
+                        <div class="pb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6" data-stagger-children>
+                            <!-- RT Cards will be generated here by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Denyut Nadi Komunitas Section -->
+        <section id="kegiatan" class="revealable">
+            <div class="text-center mb-12">
+                <span class="text-sky-500 font-semibold">Kehidupan Warga</span>
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mt-2">Denyut Nadi Komunitas Kami</h2>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" data-stagger-children>
+                <!-- Card Kegiatan -->
+                <a href="#" class="modal-trigger bg-white rounded-2xl shadow-lg overflow-hidden group revealable" 
+                   data-image="asset/img/karangtaruna.jpg"
+                   data-tag="Aktif Berkala"
+                   data-tag-color="sky"
+                   data-title="Aktivitas Karang Taruna"
+                   data-description="Karang Taruna adalah motor penggerak utama kegiatan kepemudaan di Desa Muara Dua. Mereka secara rutin mengadakan latihan olahraga, kegiatan seni, serta menjadi panitia inti dalam setiap perayaan besar seperti Peringatan Hari Kemerdekaan.">
+                    <div class="relative h-56">
+                        <img loading="lazy" src="asset/img/karangtaruna.jpg" alt="Karang Taruna" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <div class="p-6">
+                        <span class="text-xs font-semibold bg-sky-100 text-sky-700 px-3 py-1 rounded-full self-start">Aktif Berkala</span>
+                        <h3 class="text-xl font-bold text-slate-800 mt-3 mb-2">Aktivitas Karang Taruna</h3>
+                        <p class="text-slate-600 text-sm line-clamp-2">Wadah kreativitas dan kegiatan positif bagi para pemuda-pemudi desa.</p>
+                    </div>
+                </a>
+                <!-- Card Kegiatan -->
+                <a href="#" class="modal-trigger bg-white rounded-2xl shadow-lg overflow-hidden group revealable"
+                   data-image="asset/img/pkk.jpg"
+                   data-tag="Bulanan"
+                   data-tag-color="pink"
+                   data-title="Arisan & Pelatihan PKK"
+                   data-description="Ibu-ibu PKK secara rutin mengadakan pertemuan bulanan yang diisi dengan arisan untuk mempererat silaturahmi, serta pelatihan keterampilan seperti membuat kue, kerajinan tangan, dan pengelolaan kebun TOGA (Tanaman Obat Keluarga).">
+                    <div class="relative h-56">
+                        <img loading="lazy" src="asset/img/pkk.jpg" alt="Arisan & Pelatihan PKK" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <div class="p-6">
+                        <span class="text-xs font-semibold bg-pink-100 text-pink-700 px-3 py-1 rounded-full self-start">Bulanan</span>
+                        <h3 class="text-xl font-bold text-slate-800 mt-3 mb-2">Arisan & Pelatihan PKK</h3>
+                        <p class="text-slate-600 text-sm line-clamp-2">Wadah silaturahmi dan peningkatan keterampilan bagi para ibu di Desa Muara Dua.</p>
+                    </div>
+                </a>
+                <!-- Card Kegiatan -->
+                <a href="#" class="modal-trigger bg-white rounded-2xl shadow-lg overflow-hidden group revealable"
+                   data-image="asset/img/kegiatan0t6.jpg"
+                   data-tag="Setiap Malam Jumat"
+                   data-tag-color="purple"
+                   data-title="Wirid Yasin"
+                   data-description="Kegiatan rohani rutin yang diadakan bergilir di rumah-rumah warga setiap malam Jumat. Selain membaca Surat Yasin dan berdoa bersama, acara ini juga menjadi sarana untuk saling berbagi kabar dan memperkuat ikatan persaudaraan antar tetangga.">
+                    <div class="relative h-56">
+                        <img loading="lazy" src="asset/img/kegiatan0t6.jpg" alt="Wirid Yasin" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <div class="p-6">
+                        <span class="text-xs font-semibold bg-purple-100 text-purple-700 px-3 py-1 rounded-full self-start">Setiap Malam Jumat</span>
+                        <h3 class="text-xl font-bold text-slate-800 mt-3 mb-2">Wirid Yasin</h3>
+                        <p class="text-slate-600 text-sm line-clamp-2">Malam pembinaan rohani dan silaturahmi yang diadakan secara bergiliran di rumah warga.</p>
+                    </div>
+                </a>
+                <!-- Card Kegiatan -->
+                <a href="#" class="modal-trigger bg-white rounded-2xl shadow-lg overflow-hidden group revealable"
+                   data-image="asset/img/possyandu3.jpg"
+                   data-tag="Setiap Tanggal 10"
+                   data-tag-color="red"
+                   data-title="Posyandu"
+                   data-description="Program kesehatan terpadu yang melayani seluruh lapisan masyarakat. Untuk balita, ada penimbangan, imunisasi, dan pemberian makanan tambahan. Untuk lansia, ada pemeriksaan kesehatan rutin dan senam kebugaran. Semua bertujuan untuk memastikan warga Muara Dua sehat dan sejahtera.">
+                    <div class="relative h-56">
+                        <img loading="lazy" src="asset/img/possyandu3.jpg" alt="Posyandu" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <div class="p-6">
+                        <span class="text-xs font-semibold bg-red-100 text-red-700 px-3 py-1 rounded-full self-start">Setiap Tanggal 10</span>
+                        <h3 class="text-xl font-bold text-slate-800 mt-3 mb-2">Posyandu</h3>
+                        <p class="text-slate-600 text-sm line-clamp-2">Pelayanan kesehatan bulanan untuk memastikan tumbuh kembang balita dan kesehatan para lansia.</p>
+                    </div>
+                </a>
+                <!-- Card Kegiatan -->
+                <a href="#" class="modal-trigger bg-white rounded-2xl shadow-lg overflow-hidden group revealable"
+                   data-image="asset/img/tari3.jpg"
+                   data-tag="Mingguan"
+                   data-tag-color="teal"
+                   data-title="Sanggar Tari Budaya"
+                   data-description="Wadah pelestarian budaya bagi generasi muda untuk belajar dan mementaskan berbagai tarian tradisional. Latihan diadakan setiap akhir pekan di balai desa, terbuka untuk semua anak-anak dan remaja yang berminat.">
+                    <div class="relative h-56">
+                        <img loading="lazy" src="asset/img/tari3.jpg" alt="Sanggar Tari" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <div class="p-6">
+                        <span class="text-xs font-semibold bg-teal-100 text-teal-700 px-3 py-1 rounded-full self-start">Mingguan</span>
+                        <h3 class="text-xl font-bold text-slate-800 mt-3 mb-2">Sanggar Tari Budaya</h3>
+                        <p class="text-slate-600 text-sm line-clamp-2">Wadah pelestarian budaya bagi generasi muda untuk belajar tarian tradisional.</p>
+                    </div>
+                </a>
+                <!-- Card Kegiatan -->
+                <a href="#" class="modal-trigger bg-white rounded-2xl shadow-lg overflow-hidden group revealable"
+                   data-image="https://picsum.photos/seed/farmers/800/600"
+                   data-tag="Bulanan"
+                   data-tag-color="indigo"
+                   data-title="Kelompok Tani & Nelayan"
+                   data-description="Sarana bagi para petani sawit, karet, dan nelayan untuk berbagi ilmu, strategi, dan informasi harga terkini. Pertemuan rutin ini bertujuan untuk meningkatkan produktivitas dan kesejahteraan bersama secara berkelanjutan.">
+                    <div class="relative h-56">
+                        <img loading="lazy" src="https://picsum.photos/seed/farmers/800/600" alt="Kelompok Tani" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <div class="p-6">
+                        <span class="text-xs font-semibold bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full self-start">Bulanan</span>
+                        <h3 class="text-xl font-bold text-slate-800 mt-3 mb-2">Kelompok Tani & Nelayan</h3>
+                        <p class="text-slate-600 text-sm line-clamp-2">Sarana berbagi ilmu dan strategi untuk meningkatkan produktivitas dan kesejahteraan.</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Galeri Desa Section -->
+        <section id="galeri" class="revealable">
+            <div class="text-center mb-12">
+                <span class="text-sky-500 font-semibold">Visual Desa</span>
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mt-2">Galeri Desa Muara Dua</h2>
+                <p class="mt-4 max-w-2xl mx-auto text-slate-600">Beberapa potret kehidupan dan keindahan alam di desa kami.</p>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="grid gap-4">
+                    <div><img loading="lazy" class="h-auto max-w-full rounded-lg shadow-md hover:scale-105 transition-transform" src="https://picsum.photos/seed/office/500/700" alt="Kantor Desa"></div>
+                    <div><img loading="lazy" class="h-auto max-w-full rounded-lg shadow-md hover:scale-105 transition-transform" src="https://picsum.photos/seed/school/500/500" alt="Sekolah"></div>
+                </div>
+                <div class="grid gap-4">
+                    <div><img loading="lazy" class="h-auto max-w-full rounded-lg shadow-md hover:scale-105 transition-transform" src="https://picsum.photos/seed/mosque/500/500" alt="Masjid"></div>
+                    <div><img loading="lazy" class="h-auto max-w-full rounded-lg shadow-md hover:scale-105 transition-transform" src="https://picsum.photos/seed/activity/500/700" alt="Kegiatan Warga"></div>
+                </div>
+                <div class="grid gap-4">
+                    <div><img loading="lazy" class="h-auto max-w-full rounded-lg shadow-md hover:scale-105 transition-transform" src="https://picsum.photos/seed/festival/500/700" alt="Festival"></div>
+                    <div><img loading="lazy" class="h-auto max-w-full rounded-lg shadow-md hover:scale-105 transition-transform" src="https://picsum.photos/seed/children/500/500" alt="Anak-anak Desa"></div>
+                </div>
+                <div class="grid gap-4">
+                    <div><img loading="lazy" class="h-auto max-w-full rounded-lg shadow-md hover:scale-105 transition-transform" src="https://picsum.photos/seed/market/500/500" alt="Pasar Desa"></div>
+                    <div><img loading="lazy" class="h-auto max-w-full rounded-lg shadow-md hover:scale-105 transition-transform" src="https://picsum.photos/seed/river/500/700" alt="Pemandangan Sungai"></div>
+                </div>
+            </div>
+            <div class="text-center mt-12">
+                <button id="gallery-modal-trigger" class="bg-sky-500 text-white font-bold px-8 py-3 rounded-full text-lg hover:bg-sky-600 transition-colors transform hover:scale-105">
+                    Lihat Galeri Lengkap
+                </button>
+            </div>
+        </section>
+
+        <!-- Peta Digital Interaktif Section -->
+        <section id="peta" class="revealable">
+            <div class="text-center mb-12">
+                <span class="text-sky-500 font-semibold">Jelajah Desa</span>
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mt-2">Peta Lokasi Desa Muara Dua</h2>
+                <p class="mt-4 max-w-2xl mx-auto text-slate-600">Jelajahi lokasi desa kami di peta interaktif berikut.</p>
+            </div>
+            <div id="map" class="rounded-2xl shadow-lg"></div>
+        </section>
+
+        <!-- Berita & Sorotan Utama Section -->
+        <section id="berita" class="revealable">
+            <div class="text-center mb-12">
+                <span class="text-sky-500 font-semibold">Kabar Desa</span>
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mt-2">Berita & Sorotan Utama</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" data-stagger-children>
+                <!-- Berita Card 1 -->
+                <a href="#" class="modal-trigger bg-white rounded-2xl shadow-lg overflow-hidden group revealable"
+                   data-image="https://picsum.photos/seed/independenceday/800/600"
+                   data-tag="Kemerdekaan • 18 Agustus 2025"
+                   data-tag-color="red"
+                   data-title="Karang Taruna Sukses Gelar Peringatan HUT RI ke-80"
+                   data-description="Karang Taruna Desa Muara Dua sukses besar menggelar rangkaian acara peringatan HUT RI ke-80. Acara puncak yang diisi dengan panggung gembira dan pembagian hadiah ini menjadi bukti kekompakan dan kreativitas pemuda-pemudi desa dalam menyemarakkan hari kemerdekaan.">
+                    <img loading="lazy" src="https://picsum.photos/seed/independenceday/400/250" class="w-full h-52 object-cover" alt="Perayaan 17 Agustus">
+                    <div class="p-6">
+                        <span class="text-sm text-slate-500">Kemerdekaan • 18 Agustus 2025</span>
+                        <h3 class="text-xl font-bold text-slate-800 mt-1 mb-2 group-hover:text-sky-600 transition-colors">Karang Taruna Sukses Gelar Peringatan HUT RI ke-80</h3>
+                        <p class="text-slate-600 text-sm line-clamp-3">Puncak perayaan diisi panggung gembira dan pembagian hadiah, menunjukkan semangat dan kekompakan pemuda desa.</p>
+                    </div>
+                </a>
+                <!-- Berita Card 2 -->
+                <a href="#" class="modal-trigger bg-white rounded-2xl shadow-lg overflow-hidden group revealable"
+                   data-image="https://picsum.photos/seed/communitygames/800/600"
+                   data-tag="Kemerdekaan • 17 Agustus 2025"
+                   data-tag-color="red"
+                   data-title="RT 07 & 08 Meriahkan Kemerdekaan dengan Berbagai Lomba"
+                   data-description="Warga RT 07 dan RT 08 menunjukkan kekompakan luar biasa dalam memeriahkan hari kemerdekaan. Berbagai lomba tradisional seperti panjat pinang, balap karung, dan tarik tambang digelar untuk semua kalangan, dari anak-anak hingga orang dewasa, menciptakan suasana penuh tawa dan keakraban.">
+                    <img loading="lazy" src="https://picsum.photos/seed/communitygames/400/250" class="w-full h-52 object-cover" alt="Lomba 17an">
+                    <div class="p-6">
+                        <span class="text-sm text-slate-500">Kemerdekaan • 17 Agustus 2025</span>
+                        <h3 class="text-xl font-bold text-slate-800 mt-1 mb-2 group-hover:text-sky-600 transition-colors">RT 07 & 08 Meriahkan Kemerdekaan dengan Berbagai Lomba</h3>
+                        <p class="text-slate-600 text-sm line-clamp-3">Kekompakan warga terlihat dalam berbagai lomba tradisional yang digelar untuk semua usia, dari panjat pinang hingga balap karung.</p>
+                    </div>
+                </a>
+                <!-- Berita Card 3 -->
+                <a href="#" class="modal-trigger bg-white rounded-2xl shadow-lg overflow-hidden group revealable"
+                   data-image="https://picsum.photos/seed/kidscompetition/800/600"
+                   data-tag="Kemerdekaan • 17 Agustus 2025"
+                   data-tag-color="red"
+                   data-title="Semangat Kemerdekaan di RT 03 & 04 Tak Kalah Meriah"
+                   data-description="Tidak mau ketinggalan, warga RT 03 dan RT 04 juga menggelar serangkaian lomba yang tak kalah seru. Lomba makan kerupuk, balap kelereng, dan memasukkan paku ke dalam botol menjadi favorit anak-anak, sementara para ibu beradu kreativitas dalam lomba menghias tumpeng kemerdekaan.">
+                    <img loading="lazy" src="https://picsum.photos/seed/kidscompetition/400/250" class="w-full h-52 object-cover" alt="Lomba Anak-anak">
+                    <div class="p-6">
+                        <span class="text-sm text-slate-500">Kemerdekaan • 17 Agustus 2025</span>
+                        <h3 class="text-xl font-bold text-slate-800 mt-1 mb-2 group-hover:text-sky-600 transition-colors">Semangat Kemerdekaan di RT 03 & 04 Tak Kalah Meriah</h3>
+                        <p class="text-slate-600 text-sm line-clamp-3">Lomba makan kerupuk dan balap kelereng menjadi favorit anak-anak, sementara para ibu beradu kreativitas menghias tumpeng.</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal Pop-up -->
+    <div id="modal" class="modal fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 opacity-0 invisible">
+        <div class="modal-content bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto transform scale-95">
+            <div class="relative">
+                <img id="modal-image" src="" alt="Detail Gambar" class="w-full h-64 object-cover rounded-t-2xl">
+                <button id="modal-close-button" class="absolute top-4 right-4 bg-white/50 backdrop-blur-sm rounded-full p-2 hover:bg-white transition-colors">
+                    <i data-lucide="x" class="text-slate-800"></i>
+                </button>
+            </div>
+            <div class="p-6 md:p-8">
+                <span id="modal-tag" class="text-xs font-semibold px-3 py-1 rounded-full"></span>
+                <h2 id="modal-title" class="text-2xl md:text-3xl font-bold text-slate-800 mt-3 mb-4"></h2>
+                <p id="modal-description" class="text-slate-600 leading-relaxed"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gallery Modal -->
+    <div id="gallery-modal" class="modal fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 opacity-0 invisible">
+        <div class="modal-content bg-gray-900/50 backdrop-blur-lg rounded-2xl shadow-xl w-full max-w-6xl h-[90vh] transform scale-95">
+            <div class="flex justify-between items-center p-4 border-b border-gray-700">
+                <h2 class="text-xl font-bold text-white">Galeri Lengkap Desa Muara Dua</h2>
+                <button id="gallery-modal-close-button" class="rounded-full p-2 hover:bg-gray-700 transition-colors">
+                    <i data-lucide="x" class="text-white"></i>
+                </button>
+            </div>
+            <div id="gallery-content" class="p-4 sm:p-6 h-[calc(90vh-65px)] overflow-y-auto">
+                <!-- Gallery images will be inserted by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Accessibility Widget -->
+    <div class="fixed bottom-5 right-5 z-50">
+        <div id="accessibility-options" class="flex flex-col items-center space-y-2 mb-2 hidden">
+            <button id="font-increase" class="bg-white rounded-full p-3 shadow-lg hover:bg-sky-100 transition-colors"><i data-lucide="zoom-in"></i></button>
+            <button id="font-decrease" class="bg-white rounded-full p-3 shadow-lg hover:bg-sky-100 transition-colors"><i data-lucide="zoom-out"></i></button>
+            <button id="contrast-toggle" class="bg-white rounded-full p-3 shadow-lg hover:bg-sky-100 transition-colors"><i data-lucide="sun-moon"></i></button>
+        </div>
+        <button id="accessibility-toggle" class="bg-sky-500 text-white rounded-full p-4 shadow-lg hover:bg-sky-600 transition-colors transform hover:scale-110">
+            <i data-lucide="accessibility"></i>
+        </button>
+    </div>
+
+    <!-- Footer -->
+    <footer id="kontak" class="bg-slate-800 text-white">
+        <div class="container mx-auto px-6 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Desa Muara Dua</h3>
+                    <p class="text-slate-400">Kecamatan Siak Kecil,<br>Kabupaten Bengkalis, Riau</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Tautan Cepat</h3>
+                    <ul class="space-y-2">
+                         <li><a href="#tentang" class="text-slate-400 hover:text-white">Tentang</a></li>
+                         <li><a href="#potensi" class="text-slate-400 hover:text-white">Potensi</a></li>
+                         <li><a href="#pemerintahan" class="text-slate-400 hover:text-white">Pemerintahan</a></li>
+                         <li><a href="#galeri" class="text-slate-400 hover:text-white">Galeri</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Hubungi Kami</h3>
+                    <p class="text-slate-400">Email: kontak@muaradua.desa.id</p>
+                    <p class="text-slate-400">Telepon: (0766) 123-457</p>
+                    <div class="flex space-x-4 mt-4">
+                        <a href="#" class="text-slate-400 hover:text-white"><i data-lucide="facebook"></i></a>
+                        <a href="#" class="text-slate-400 hover:text-white"><i data-lucide="instagram"></i></a>
+                        <a href="#" class="text-slate-400 hover:text-white"><i data-lucide="youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-slate-700 mt-8 pt-6 text-center text-slate-500">
+                <p>&copy; <span id="year"></span> KKN UIN Suska Muara Dua 2025</p>
+            </div>
+        </div>
+    </footer>
+
+
+    <script>
+        // Wait for the DOM to be fully loaded before running scripts
+        document.addEventListener('DOMContentLoaded', (event) => {
+            
+            // Generate RT List
+            const rtListContainer = document.querySelector('#aparatur-wilayah .accordion-content div');
+            if(rtListContainer) {
+                let rtListHtml = '';
+                const rtNames = ["Ahmad Subarjo", "Budi Santoso", "Cahyo Purnomo", "Dedi Irawan", "Eko Prasetyo", "Fajar Nugroho", "Guntur Wijaya", "Hadi Mulyono", "Irfan Hakim", "Joko Susilo"];
+                for (let i = 1; i <= 10; i++) {
+                    const gender = 'boy'; // All names are male
+                    let phone = '0853' + Math.floor(10000000 + Math.random() * 90000000);
+                    rtListHtml += `
+                    <div class="bg-white p-4 rounded-xl shadow-md hover:bg-sky-100 transition-colors duration-300 revealable">
+                        <div class="flex items-center space-x-4">
+                           <img src="https://avatar.iran.liara.run/public/${gender}?username=rt${i}" alt="Ketua RT ${i}" class="w-16 h-16 rounded-full border-2 border-sky-200">
+                           <div>
+                                <h4 class="font-bold text-slate-800">Ketua RT ${String(i).padStart(2, '0')}</h4>
+                                <p class="text-sm text-slate-500">${rtNames[i-1]}</p>
+                                <p class="text-xs text-slate-400 mt-1">Jl. RT ${String(i).padStart(2, '0')} No. ${i}</p>
+                           </div>
+                        </div>
+                    </div>
+                    `;
+                }
+                rtListContainer.innerHTML = rtListHtml;
+            }
+
+            const rwListContainer = document.querySelector('#aparatur-rw .accordion-content div');
+            if(rwListContainer) {
+                let rwListHtml = '';
+                const rwData = [ { name: "Sutar", rw: "01" }, { name: "Ponidi", rw: "02" }, { name: "Misman", rw: "03" }, { name: "Kadir", rw: "04" }];
+                rwData.forEach((data, i) => {
+                    rwListHtml += `
+                    <div class="text-center bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 revealable">
+                        <img src="https://avatar.iran.liara.run/public/boy?username=rw${i+1}" alt="Ketua RW ${data.rw}" class="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-sky-200">
+                        <h3 class="text-xl font-bold text-slate-800">${data.name}</h3>
+                        <p class="text-sky-600 font-semibold">Ketua RW ${data.rw}</p>
+                    </div>
+                    `;
+                });
+                rwListContainer.innerHTML = rwListHtml;
+            }
+
+            // Generate Gallery Modal Content
+            const galleryContent = document.getElementById('gallery-content');
+            if(galleryContent) {
+                let galleryHtml = '<div class="columns-2 md:columns-3 lg:columns-4 gap-4">';
+                const galleryImages = ['office', 'school', 'mosque', 'activity', 'festival', 'children', 'market', 'river', 'scenery', 'people', 'work', 'boat'];
+                galleryImages.forEach((seed, i) => {
+                    galleryHtml += `<img class="mb-4 rounded-lg shadow-lg w-full h-auto" src="https://picsum.photos/seed/${seed}/800/${600 + (i%3 * 100)}" alt="Galeri ${i+1}" loading="lazy">`;
+                });
+                galleryHtml += '</div>';
+                galleryContent.innerHTML = galleryHtml;
+            }
+
+            // Initialize Lucide Icons
+            lucide.createIcons();
+
+            // Mobile Menu Toggle
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Reveal on Scroll Logic
+            const revealElements = document.querySelectorAll('.revealable');
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        const staggerChildren = entry.target.querySelectorAll('[data-stagger-children] .revealable');
+                        staggerChildren.forEach((child, index) => {
+                            child.style.transitionDelay = `${index * 100}ms`;
+                        });
+                        revealObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            revealElements.forEach(el => {
+                revealObserver.observe(el);
+            });
+
+            // Set current year in footer
+            document.getElementById('year').textContent = new Date().getFullYear();
+
+            // Leaflet Map Initialization
+            const map = L.map('map').setView([1.07169, 101.9791], 15); // Adjusted coordinates and zoom
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(map);
+            const governmentIcon = L.icon({ iconUrl: 'https://img.icons8.com/office/40/building.png', iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -32] });
+            const educationIcon = L.icon({ iconUrl: 'https://img.icons8.com/office/40/school.png', iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -32] });
+            const worshipIcon = L.icon({ iconUrl: 'https://img.icons8.com/office/40/mosque.png', iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -32] });
+            const umkmIcon = L.icon({ iconUrl: 'https://img.icons8.com/office/40/shop.png', iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -32] });
+            L.marker([1.07169, 101.9791], {icon: governmentIcon}).addTo(map).bindPopup('<h4>Kantor Desa Muara Dua</h4>Pusat administrasi dan pelayanan masyarakat desa.').openPopup();
+            L.marker([1.075, 101.982], {icon: educationIcon}).addTo(map).bindPopup('<h4>SDN & PAUD</h4>Pusat Pendidikan Desa.');
+            L.marker([1.069, 101.975], {icon: worshipIcon}).addTo(map).bindPopup('<h4>Masjid Jami\' Al-Ikhlas</h4>Masjid utama untuk kegiatan ibadah masyarakat.');
+            L.marker([1.078, 101.985], {icon: umkmIcon}).addTo(map).bindPopup('<h4>Sentra UMKM Desa</h4>Pusat penjualan produk unggulan desa.');
+
+            // Modal Logic
+            const modal = document.getElementById('modal');
+            const modalTriggers = document.querySelectorAll('.modal-trigger');
+            const closeModalButton = document.getElementById('modal-close-button');
+
+            const openModal = (trigger) => {
+                const modalImage = document.getElementById('modal-image');
+                const modalTag = document.getElementById('modal-tag');
+                const modalTitle = document.getElementById('modal-title');
+                const modalDescription = document.getElementById('modal-description');
+                const tagColors = { sky: 'bg-sky-100 text-sky-700', pink: 'bg-pink-100 text-pink-700', purple: 'bg-purple-100 text-purple-700', red: 'bg-red-100 text-red-700', amber: 'bg-amber-100 text-amber-700', green: 'bg-green-100 text-green-700', cyan: 'bg-cyan-100 text-cyan-700', indigo: 'bg-indigo-100 text-indigo-700', orange: 'bg-orange-100 text-orange-700', teal: 'bg-teal-100 text-teal-700' };
+                
+                modalImage.src = trigger.dataset.image;
+                modalTag.textContent = trigger.dataset.tag;
+                modalTag.className = `text-xs font-semibold px-3 py-1 rounded-full ${tagColors[trigger.dataset.tagColor] || 'bg-slate-100 text-slate-700'}`;
+                modalTitle.textContent = trigger.dataset.title;
+                modalDescription.textContent = trigger.dataset.description;
+
+                document.body.classList.add('modal-open');
+                modal.classList.remove('invisible', 'opacity-0');
+                modal.querySelector('.modal-content').classList.remove('scale-95');
+            };
+
+            const closeModal = () => {
+                document.body.classList.remove('modal-open');
+                modal.classList.add('opacity-0');
+                modal.querySelector('.modal-content').classList.add('scale-95');
+                setTimeout(() => modal.classList.add('invisible'), 300);
+            };
+
+            modalTriggers.forEach(trigger => {
+                trigger.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    openModal(trigger);
+                });
+            });
+
+            closeModalButton.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+
+            // Gallery Modal Logic
+            const galleryModal = document.getElementById('gallery-modal');
+            const galleryTrigger = document.getElementById('gallery-modal-trigger');
+            const galleryCloseButton = document.getElementById('gallery-modal-close-button');
+
+            const openGalleryModal = () => {
+                document.body.classList.add('modal-open');
+                galleryModal.classList.remove('invisible', 'opacity-0');
+                galleryModal.querySelector('.modal-content').classList.remove('scale-95');
+            };
+
+            const closeGalleryModal = () => {
+                document.body.classList.remove('modal-open');
+                galleryModal.classList.add('opacity-0');
+                galleryModal.querySelector('.modal-content').classList.add('scale-95');
+                setTimeout(() => galleryModal.classList.add('invisible'), 300);
+            };
+
+            galleryTrigger.addEventListener('click', openGalleryModal);
+            galleryCloseButton.addEventListener('click', closeGalleryModal);
+            galleryModal.addEventListener('click', (e) => {
+                if (e.target === galleryModal) closeGalleryModal();
+            });
+            
+            // Visi Misi Modal Logic
+            const misiModalTrigger = document.getElementById('misi-modal-trigger');
+            if (misiModalTrigger) {
+                misiModalTrigger.dataset.image = "https://picsum.photos/seed/vision/800/600";
+                misiModalTrigger.dataset.tag = "Arah Pembangunan";
+                misiModalTrigger.dataset.tagColor = "sky";
+                misiModalTrigger.dataset.title = "Penjabaran Misi Desa Muara Dua";
+                misiModalTrigger.dataset.description = "1. Peningkatan pelayanan terhadap pengurusan administratif masyarakat.\n2. Meningkatkan kualitas Sumber Daya Manusia (SDM) dan pelayanan di berbagai bidang.\n3. Mengembangkan potensi desa dalam mengelola Sumber Daya Alam (SDA).\n4. Meningkatkan dan memperkuat fungsi dan peran lembaga desa.\n5. Memperkuat nilai-nilai luhur budaya gotong royong dalam membangun desa.\n6. Melestarikan budaya, tradisi, dan adat istiadat masyarakat.\n7. Mewujudkan suasana aman dan kondusif.";
+                misiModalTrigger.classList.add('modal-trigger');
+                misiModalTrigger.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    openModal(misiModalTrigger);
+                });
+            }
+
+            // Accessibility Widget Logic
+            const accessibilityToggle = document.getElementById('accessibility-toggle');
+            const accessibilityOptions = document.getElementById('accessibility-options');
+            const fontIncrease = document.getElementById('font-increase');
+            const fontDecrease = document.getElementById('font-decrease');
+            const contrastToggle = document.getElementById('contrast-toggle');
+            const html = document.documentElement;
+
+            accessibilityToggle.addEventListener('click', () => {
+                accessibilityOptions.classList.toggle('hidden');
+            });
+
+            fontIncrease.addEventListener('click', () => {
+                let currentSize = parseFloat(getComputedStyle(html).getPropertyValue('--font-size-base'));
+                if (currentSize < 22) { // Max size 22px
+                    html.style.setProperty('--font-size-base', `${currentSize + 1}px`);
+                }
+            });
+
+            fontDecrease.addEventListener('click', () => {
+                let currentSize = parseFloat(getComputedStyle(html).getPropertyValue('--font-size-base'));
+                if (currentSize > 12) { // Min size 12px
+                    html.style.setProperty('--font-size-base', `${currentSize - 1}px`);
+                }
+            });
+
+            contrastToggle.addEventListener('click', () => {
+                document.body.classList.toggle('high-contrast');
+            });
+
+            // Scrollspy Logic
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            const scrollSpyObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { rootMargin: "-50% 0px -50% 0px" });
+
+            sections.forEach(section => {
+                scrollSpyObserver.observe(section);
+            });
+
+            // Accordion Logic
+            const accordionToggles = document.querySelectorAll('.accordion-toggle');
+            accordionToggles.forEach(toggle => {
+                toggle.addEventListener('click', () => {
+                    const item = toggle.closest('.accordion-item');
+                    item.classList.toggle('active');
+                });
+            });
+
+        });
+    </script>
+</body>
+</html>
