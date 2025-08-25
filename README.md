@@ -1,10 +1,6 @@
 # 🌐 Website Profil Desa Muara Dua
-
-[![GitHub Stars](https://img.shields.io/github/stars/Erliandikasyahputraa/website-desa-muara-dua?style=flat-square)](https://github.com/Erliandikasyahputraa/website-desa-muara-dua/stargazers)
-[![License](https://img.shields.io/github/license/Erliandikasyahputraa/website-desa-muara-dua?style=flat-square)](LICENSE)
-![Last Commit](https://img.shields.io/github/last-commit/Erliandikasyahputraa/website-desa-muara-dua?style=flat-square)
-[![Netlify Status](https://api.netlify.com/api/v1/badges/your-netlify-site-id/deploy-status)](https://your-netlify-site.netlify.app)
-[![Website Status](https://img.shields.io/website?url=https://desamuaradua.netlify.app)](https://desamuaradua.netlify.app)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/93d03939-06fe-4a49-b702-edcd77b31a51/deploy-status)](https://desamuaradua.netlify.app)
+[![Website Status](https://img.shields.io/website?url=https://desamuaradua.netlify.app&style=flat-square)](https://desamuaradua.netlify.app)
 
 > 🏠 Website profil modern untuk Desa Muara Dua, menghadirkan informasi desa dalam format digital yang interaktif dan informatif.
 
